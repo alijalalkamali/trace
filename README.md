@@ -6,6 +6,8 @@ study measures not only how much steering shifts behavior but the qualitative
 *mode* of the response, and finds that some modes are exclusive to a single
 developer.
 
+Study arXiv paper: https://arxiv.org/abs/2608.06578
+
 ## What this is
 
 Each evaluation item pairs a base prompt with a steered variant of the same
