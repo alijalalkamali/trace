@@ -368,7 +368,7 @@ def compute_fleiss_kappa_per_category(
     """
     # Delayed import so this script can be used for other analyses without
     # requiring the full judgment file layout.
-    from lbe.judging.aggregate import compute_fleiss_kappa, load_all_judgments
+    from tracekit.judging.aggregate import compute_fleiss_kappa, load_all_judgments
 
     df = load_all_judgments(judgments_dir)
     if item_id_filter is not None:

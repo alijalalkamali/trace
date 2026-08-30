@@ -1,11 +1,11 @@
 """Smoke tests: verify the package imports and basic structure works."""
 
-import lbe
+import tracekit
 
 
 def test_package_imports():
-    """The lbe package can be imported without errors."""
-    assert lbe is not None
+    """The tracekit package can be imported without errors."""
+    assert tracekit is not None
 
 
 def test_python_version():

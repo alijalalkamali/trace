@@ -43,9 +43,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from lbe.io.dataset import EvalResult
-from lbe.io.jsonl import read_jsonl
-from lbe.models.base import TRUNCATION_FINISH_REASONS
+from tracekit.io.dataset import EvalResult
+from tracekit.io.jsonl import read_jsonl
+from tracekit.models.base import TRUNCATION_FINISH_REASONS
 
 CONDITIONS = ("base", "steered")
 

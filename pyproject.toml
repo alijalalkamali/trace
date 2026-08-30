@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lbe"
+name = "trace-kit"
 version = "0.1.0"
 description = "LLM Behavioral Eval — rigorous behavioral evaluation of small open-weights LLMs"
 readme = "README.md"
@@ -31,7 +31,7 @@ target-version = "py311"
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/lbe/interp/probe.py" = ["N803", "N806"]  # sklearn X,y naming convention
+"src/tracekit/interp/probe.py" = ["N803", "N806"]  # sklearn X,y naming convention
 "tests/test_interp.py" = ["N806"]             # same
 
 [tool.pytest.ini_options]

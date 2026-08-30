@@ -1,9 +1,9 @@
 """
 Judge the activation-steering sweep: every judge x every alpha arm.
 
-Wraps the existing judge pipeline (lbe.judging.run_judges) with zero changes
+Wraps the existing judge pipeline (tracekit.judging.run_judges) with zero changes
 to it: each (layer, alpha) arm is a pseudo-responder result file produced by
-lbe.interp.convert_sweep, judged in the BASE condition only -- the sweep
+tracekit.interp.convert_sweep, judged in the BASE condition only -- the sweep
 generations answered base prompts; the intervention lives in activation
 space, and judging them against the base rubric is exactly the comparison
 the analysis needs (derail rate per alpha vs. the alpha=0 control).
@@ -27,7 +27,7 @@ import argparse
 import re
 from pathlib import Path
 
-from lbe.judging.run_judges import FatalJudgeError, run_judge_on_responder
+from tracekit.judging.run_judges import FatalJudgeError, run_judge_on_responder
 
 JUDGES = (
     "anthropic:claude-opus-4-7",
@@ -60,7 +60,7 @@ def main() -> None:
     if not arm_files:
         raise SystemExit(
             f"No steered arm files found under {args.results_dir} -- run "
-            f"lbe.interp.convert_sweep first."
+            f"tracekit.interp.convert_sweep first."
         )
     print(f"{len(arm_files)} arm file(s), {len(args.judges)} judge(s).")
 

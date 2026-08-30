@@ -45,9 +45,9 @@ from pathlib import Path
 # so filenames are guaranteed to match -- do not reimplement the slug logic.
 from run_judge_pipeline import judge_output_path, responder_results_path
 
-from lbe.io.jsonl import read_jsonl, write_jsonl
-from lbe.judging.run_judges import FatalJudgeError, JudgmentRecord, run_judge_on_responder
-from lbe.models.error_utils import format_error_report
+from tracekit.io.jsonl import read_jsonl, write_jsonl
+from tracekit.judging.run_judges import FatalJudgeError, JudgmentRecord, run_judge_on_responder
+from tracekit.models.error_utils import format_error_report
 
 
 def strip_errors(output_path: Path) -> int:

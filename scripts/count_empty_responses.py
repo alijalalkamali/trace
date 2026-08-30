@@ -19,8 +19,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from lbe.io.dataset import EvalResult
-from lbe.io.jsonl import read_jsonl
+from tracekit.io.dataset import EvalResult
+from tracekit.io.jsonl import read_jsonl
 
 
 def is_empty(text: str | None) -> bool:

@@ -11,8 +11,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.io.jsonl import read_jsonl, write_jsonl
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.io.jsonl import read_jsonl, write_jsonl
 
 
 def run_v2_item(

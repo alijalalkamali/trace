@@ -42,8 +42,8 @@ import os
 
 import openai
 
-from lbe.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
-from lbe.models.base import GenerationOutput, Model
+from tracekit.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
+from tracekit.models.base import GenerationOutput, Model
 
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 

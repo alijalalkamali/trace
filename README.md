@@ -1,4 +1,4 @@
-# lbe — Cross-Laboratory LLM Steerability Evaluation
+# TRACE — Transparent Robustness, Alignment, and Character Evaluation
 
 A symmetric, blind, peer-judged evaluation of how six frontier language models,
 one from each of six developers, respond to explicit steering pressure. The
@@ -71,9 +71,9 @@ The findings survived two forms of scrutiny built into the pipeline:
 ## Repository layout
 
 ```
-data/                     Evaluation items (steerability_items_v3.jsonl, 300 items)
-src/lbe/                  Package: model backends, judging, aggregation, IO
-src/lbe/interp/           Mechanistic interpretability: harvesting, probing, steering
+data/                     Evaluation items (steerability_items_v3.jsonl, 300 evaluation items plus 40 items for sanity check)
+src/tracekit/                  Package: model backends, judging, aggregation, IO
+src/tracekit/interp/           Mechanistic interpretability: harvesting, probing, steering
 scripts/                  Pipeline entry points and diagnostics
 results/analysis/         Aggregate rate tables, statistical tests, agreement
 results/leakage/          Demand-characteristics control outputs
@@ -103,7 +103,7 @@ Aggregate results and analysis outputs are in `results/`. The full raw
 judgment matrix is available as a GitHub release asset and archived at
 [doi:10.5281/zenodo.21629846](https://doi.org/10.5281/zenodo.21629846).
 
-## Mechanistic interpretability (src/lbe/interp/)
+## Mechanistic interpretability (src/tracekit/interp/)
 
 Extends the behavioral evaluation to mechanism on the open-weight model.
 Pipeline: activation harvesting (forward hooks, last-prompt-token residual
@@ -113,5 +113,34 @@ with a vector/eval item split. Result: the derail-vs-answer split is decodable
 at 0.87 held-out balanced accuracy (plateau layers 32–76) and causally
 steerable: derail rate moves monotonically 0%→86% across the α sweep (Fisher
 p < 1e-5 vs. control both directions). Entry points:
-`src/lbe/interp/{harvest,probe,steer}.py`, `scripts/judge_steering_sweep.py`,
+`src/tracekit/interp/{harvest,probe,steer}.py`, `scripts/judge_steering_sweep.py`,
 `scripts/analyze_steering_sweep.py`; results in `results/interp/steering_rates.csv`.
+
+## Installation
+
+```bash
+git clone https://github.com/alijalalkamali/trace.git
+cd trace
+pip install -e .
+```
+
+Requires Python 3.11 or later.
+
+The distribution is named `trace-kit` and the import name is `tracekit`. The
+bare name `trace` belongs to a Python standard library module that takes
+precedence on `sys.path`, so it cannot be used as an import name:
+
+```python
+from tracekit.judging.run_judges import run_judge_on_responder
+```
+
+API keys for the model backends are read from the environment. Obtain them and set only the
+ones you need:
+
+```bash
+export ANTHROPIC_API_KEY=...
+export OPENAI_API_KEY=...
+export GEMINI_API_KEY=...  # GOOGLE_API_KEY also accepted, and takes precedence
+export DEEPSEEK_API_KEY=...
+export TOGETHER_API_KEY=...
+```

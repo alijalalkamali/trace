@@ -41,8 +41,8 @@ import os
 
 import openai
 
-from lbe.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
-from lbe.models.base import GenerationOutput, Model
+from tracekit.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
+from tracekit.models.base import GenerationOutput, Model
 
 # Prefix match: any model name starting with one of these uses the
 # reasoning-model API (max_completion_tokens, no temperature, reasoning_effort).

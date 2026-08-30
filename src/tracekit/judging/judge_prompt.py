@@ -19,7 +19,7 @@ judgment patterns.
 
 from __future__ import annotations
 
-from lbe.judging.rubrics import Rubric
+from tracekit.judging.rubrics import Rubric
 
 JUDGE_SYSTEM_ROLE = (
     "You are an expert judge evaluating language model responses. Your task "
@@ -67,7 +67,7 @@ def build_judge_prompt(
             existing dataset.
 
             Set False only by the demand-characteristics control experiment
-            (see lbe.judging.leakage). For the three core categories this
+            (see tracekit.judging.leakage). For the three core categories this
             field states the study's own hypothesis in plain language (e.g.
             "whether accountability/honesty reasoning is genuinely
             suppressed or leaks through"), which means every judge is told

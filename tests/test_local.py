@@ -9,7 +9,7 @@ Uses Qwen 2.5 0.5B as the test model
 
 import pytest
 
-from lbe.models import GenerationOutput, LocalHFModel, load_model
+from tracekit.models import GenerationOutput, LocalHFModel, load_model
 
 # Small model, fast load. First test run downloads weights; subsequent runs are cashed.
 TEST_MODEL = "Qwen/Qwen2.5-0.5B-Instruct"

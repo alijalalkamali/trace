@@ -44,8 +44,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from lbe.interp.config import HarvestConfig
-from lbe.interp.data import ProbeExample, build_probe_examples
+from tracekit.interp.config import HarvestConfig
+from tracekit.interp.data import ProbeExample, build_probe_examples
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)

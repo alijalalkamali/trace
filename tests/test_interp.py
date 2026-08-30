@@ -1,6 +1,6 @@
 """
-Tests for lbe.interp.data (join logic, against the real lbe.io schemas) and
-lbe.interp.probe (statistical behavior on synthetic data with known truth).
+Tests for tracekit.interp.data (join logic, against the real tracekit.io schemas) and
+tracekit.interp.probe (statistical behavior on synthetic data with known truth).
 
 The probe tests are the important ones conceptually: they verify the
 pipeline finds signal when signal exists by construction, and -- the case
@@ -14,10 +14,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from lbe.interp.data import binary_labels, build_probe_examples
-from lbe.interp.probe import probe_layer
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.io.jsonl import write_jsonl
+from tracekit.interp.data import binary_labels, build_probe_examples
+from tracekit.interp.probe import probe_layer
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.io.jsonl import write_jsonl
 
 RESPONDER = "together:meta-llama/Llama-3.3-70B-Instruct-Turbo"
 CATEGORY = "values_conflict_low"

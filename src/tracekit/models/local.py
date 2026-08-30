@@ -18,7 +18,7 @@ Sampling controls:
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from lbe.models.base import GenerationOutput, Model
+from tracekit.models.base import GenerationOutput, Model
 
 
 class LocalHFModel(Model):

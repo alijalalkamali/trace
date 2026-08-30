@@ -26,14 +26,14 @@ import argparse
 import sys
 from pathlib import Path
 
-from lbe.judging.aggregate import (
+from tracekit.judging.aggregate import (
     compute_consensus,
     compute_judge_divergence,
     compute_pairwise_agreement,
     load_all_judgments,
     save_analysis_ready_csv,
 )
-from lbe.judging.run_judges import run_judge_on_responder
+from tracekit.judging.run_judges import run_judge_on_responder
 
 # Default set of judges and responders used when --judges / --responders
 # are not passed. One frontier model per lab (6 total) — Haiku 4.5 is

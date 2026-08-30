@@ -8,7 +8,7 @@ retried at a higher level.
 
 Reasoning-model judges (Opus, GPT-5, DeepSeek, Qwen) all prepend a
 <thinking>...</thinking> block before their JSON answer (see the backend
-modules under lbe.models). Extraction strips that block first, rather than
+modules under tracekit.models). Extraction strips that block first, rather than
 relying on the JSON-object regex to skip over it — the greedy regex will
 span from the FIRST '{' anywhere in the text to the LAST '}', so any stray
 brace inside the reasoning prose (a judge describing the rubric's label set,
@@ -35,7 +35,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
-from lbe.judging.rubrics import Rubric
+from tracekit.judging.rubrics import Rubric
 
 
 class JudgmentResult(BaseModel):

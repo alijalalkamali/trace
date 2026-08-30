@@ -21,8 +21,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from lbe.evals.steerability_v2 import run_v2_eval
-from lbe.models.loader import load_model
+from tracekit.evals.steerability_v2 import run_v2_eval
+from tracekit.models.loader import load_model
 
 
 def sanitize_filename(name: str) -> str:

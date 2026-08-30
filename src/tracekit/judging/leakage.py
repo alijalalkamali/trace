@@ -97,7 +97,7 @@ def sample_leakage_triples(
 
     Args:
         judgments_df: Long-format judgments from
-            lbe.judging.aggregate.load_all_judgments.
+            tracekit.judging.aggregate.load_all_judgments.
         seed: RNG seed. Fixed so the sample is reproducible from the
             committed code alone.
         categories: Categories to include. Defaults to the three core ones;

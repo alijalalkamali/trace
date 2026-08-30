@@ -28,8 +28,8 @@ from typing import TYPE_CHECKING
 
 import torch
 
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.io.jsonl import read_jsonl
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.io.jsonl import read_jsonl
 
 if TYPE_CHECKING:
     from transformers import PreTrainedTokenizerBase

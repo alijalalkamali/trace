@@ -50,8 +50,8 @@ import shutil
 import sys
 from pathlib import Path
 
-from lbe.io.jsonl import read_jsonl, write_jsonl
-from lbe.judging.run_judges import JudgmentRecord
+from tracekit.io.jsonl import read_jsonl, write_jsonl
+from tracekit.judging.run_judges import JudgmentRecord
 
 
 def sanitize_filename(name: str) -> str:

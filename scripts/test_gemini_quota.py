@@ -10,7 +10,7 @@ Usage:
 import sys
 import time
 
-from lbe.models.google_backend import GoogleBackend
+from tracekit.models.google_backend import GoogleBackend
 
 n = int(sys.argv[1]) if len(sys.argv) > 1 else 8
 

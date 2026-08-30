@@ -21,8 +21,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from lbe.io.jsonl import read_jsonl
-from lbe.judging.run_judges import JudgmentRecord
+from tracekit.io.jsonl import read_jsonl
+from tracekit.judging.run_judges import JudgmentRecord
 
 
 def load_all_judgments(judgments_dir: Path) -> pd.DataFrame:

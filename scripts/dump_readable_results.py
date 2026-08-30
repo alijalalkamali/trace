@@ -20,8 +20,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.io.jsonl import read_jsonl
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.io.jsonl import read_jsonl
 
 
 def dump_one(results_path: Path, items: dict[str, SteerabilityItem]) -> Path:

@@ -36,9 +36,9 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.io.jsonl import read_jsonl
-from lbe.models.loader import load_model
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.io.jsonl import read_jsonl
+from tracekit.models.loader import load_model
 
 # =============================================================================
 # Configuration

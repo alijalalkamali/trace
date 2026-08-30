@@ -18,7 +18,7 @@ judge only the base condition for these files, or the empty slot will
 produce junk judgments that must be excluded downstream.
 
 Usage:
-    python -m lbe.interp.convert_sweep \
+    python -m tracekit.interp.convert_sweep \
         --sweep-path results/interp/steering_sweep_L40.jsonl \
         --output-dir results/
 """
@@ -31,8 +31,8 @@ import logging
 from collections import defaultdict
 from pathlib import Path
 
-from lbe.io.dataset import EvalResult
-from lbe.io.jsonl import write_jsonl
+from tracekit.io.dataset import EvalResult
+from tracekit.io.jsonl import write_jsonl
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)

@@ -27,8 +27,8 @@ import os
 
 import openai
 
-from lbe.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
-from lbe.models.base import GenerationOutput, Model
+from tracekit.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
+from tracekit.models.base import GenerationOutput, Model
 
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 REASONING_TOKEN_BUFFER = 4000

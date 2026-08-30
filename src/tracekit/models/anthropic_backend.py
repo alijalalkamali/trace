@@ -31,8 +31,8 @@ import os
 
 import anthropic
 
-from lbe.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
-from lbe.models.base import GenerationOutput, Model
+from tracekit.models.api_utils import DEFAULT_TIMEOUT, retry_with_backoff
+from tracekit.models.base import GenerationOutput, Model
 
 # Buffer added to max_tokens to give adaptive thinking room to reason.
 # max_tokens is a hard cap on thinking + response combined.

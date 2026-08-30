@@ -16,8 +16,8 @@ Naming conventions:
             "google:gemini-3.5-pro"
 """
 
-from lbe.models.base import Model
-from lbe.models.local import LocalHFModel
+from tracekit.models.base import Model
+from tracekit.models.local import LocalHFModel
 
 
 def load_model(model_name: str, **kwargs) -> Model:
@@ -41,27 +41,27 @@ def load_model(model_name: str, **kwargs) -> Model:
         provider, model_id = model_name.split(":", 1)
 
         if provider == "anthropic":
-            from lbe.models.anthropic_backend import AnthropicBackend
+            from tracekit.models.anthropic_backend import AnthropicBackend
 
             return AnthropicBackend(model_id, **kwargs)
 
         if provider == "openai":
-            from lbe.models.openai_backend import OpenAIBackend
+            from tracekit.models.openai_backend import OpenAIBackend
 
             return OpenAIBackend(model_id, **kwargs)
 
         if provider == "deepseek":
-            from lbe.models.deepseek_backend import DeepSeekBackend
+            from tracekit.models.deepseek_backend import DeepSeekBackend
 
             return DeepSeekBackend(model_id, **kwargs)
 
         if provider == "together":
-            from lbe.models.together_backend import TogetherBackend
+            from tracekit.models.together_backend import TogetherBackend
 
             return TogetherBackend(model_id, **kwargs)
 
         if provider == "google":
-            from lbe.models.google_backend import GoogleBackend
+            from tracekit.models.google_backend import GoogleBackend
 
             return GoogleBackend(model_id, **kwargs)
 

@@ -9,7 +9,7 @@ import time
 from collections.abc import Callable
 from typing import TypeVar
 
-from lbe.models.error_utils import classify_error
+from tracekit.models.error_utils import classify_error
 
 T = TypeVar("T")
 
@@ -27,7 +27,7 @@ def retry_with_backoff(
 
     A FATAL exception (quota exhaustion, billing failure, invalid
     credentials, or a model access restriction -- see
-    lbe.models.error_utils.classify_error) is raised immediately on the
+    tracekit.models.error_utils.classify_error) is raised immediately on the
     first attempt, with NO retry and NO delay. These conditions fail
     identically on every attempt, so retrying wastes time (the backoff
     delays) and money (each retry is itself a real, doomed API call) without

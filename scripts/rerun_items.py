@@ -66,12 +66,12 @@ import shutil
 import sys
 from pathlib import Path
 
-from lbe.evals.steerability_v2 import run_v2_item
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.io.jsonl import read_jsonl, write_jsonl
-from lbe.models.base import TRUNCATION_FINISH_REASONS
-from lbe.models.error_utils import classify_error, format_error_report
-from lbe.models.loader import load_model
+from tracekit.evals.steerability_v2 import run_v2_item
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.io.jsonl import read_jsonl, write_jsonl
+from tracekit.models.base import TRUNCATION_FINISH_REASONS
+from tracekit.models.error_utils import classify_error, format_error_report
+from tracekit.models.loader import load_model
 
 
 def sanitize_filename(name: str) -> str:

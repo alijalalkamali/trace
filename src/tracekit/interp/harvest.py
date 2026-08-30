@@ -1,5 +1,5 @@
 """
-Activation harvesting entry point (lbe.interp).
+Activation harvesting entry point (tracekit.interp).
 
 Joins items x logged responses x consensus labels, teacher-forces each
 (exact original prompt + exact logged response) through the locally loaded
@@ -18,7 +18,7 @@ Output layout:
         metadata.csv    -- one row per harvested item
 
 Usage (rental GPU, real run):
-    python -m lbe.interp.harvest \
+    python -m tracekit.interp.harvest \
         --model-name meta-llama/Llama-3.3-70B-Instruct \
         --hardware-profile rental_gpu \
         --items-path data/steerability_items_v3.jsonl \
@@ -40,9 +40,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from lbe.interp.config import HarvestConfig
-from lbe.interp.data import build_probe_examples, compute_boundary_index
-from lbe.interp.hooks import ActivationCache
+from tracekit.interp.config import HarvestConfig
+from tracekit.interp.data import build_probe_examples, compute_boundary_index
+from tracekit.interp.hooks import ActivationCache
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)

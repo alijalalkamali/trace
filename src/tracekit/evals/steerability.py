@@ -9,13 +9,13 @@ delta is computed. The score is whether the metric shifted in the expected
 direction.
 
 This module is intentionally model-agnostic: it accepts any Model instance
-from lbe.models, so the same eval runs against local HuggingFace models or
+from tracekit.models, so the same eval runs against local HuggingFace models or
 future API backends.
 """
 
-from lbe.evals.scorers.rule_based import measure
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.models.base import Model
+from tracekit.evals.scorers.rule_based import measure
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.models.base import Model
 
 # Per-category expected direction of metric change after steering.
 # +1 means the steered metric should be HIGHER than the base metric.

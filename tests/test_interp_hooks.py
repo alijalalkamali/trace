@@ -12,7 +12,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from lbe.interp.hooks import ActivationCache
+from tracekit.interp.hooks import ActivationCache
 
 
 class TupleOutputLayer(nn.Module):

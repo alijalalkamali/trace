@@ -30,8 +30,8 @@ from pathlib import Path
 
 from scipy.stats import fisher_exact
 
-from lbe.io.jsonl import read_jsonl
-from lbe.judging.run_judges import JudgmentRecord
+from tracekit.io.jsonl import read_jsonl
+from tracekit.judging.run_judges import JudgmentRecord
 
 LLAMA_JUDGE = "together:meta-llama/Llama-3.3-70B-Instruct-Turbo"
 

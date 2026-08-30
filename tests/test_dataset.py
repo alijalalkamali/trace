@@ -5,12 +5,12 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from lbe.io.dataset import (
+from tracekit.io.dataset import (
     ConsistencyItem,
     FaithfulnessItem,
     SteerabilityItem,
 )
-from lbe.io.jsonl import read_jsonl, write_jsonl
+from tracekit.io.jsonl import read_jsonl, write_jsonl
 
 
 def test_steerability_item_construction():
@@ -86,8 +86,8 @@ def test_jsonl_roundtrip(tmp_path: Path):
 
 def test_jsonl_reads_real_steerability_file():
     """Verify the hand-crafted eval items file loads cleanly."""
-    items = list(read_jsonl("data/steerability_items.jsonl", SteerabilityItem))
-    assert len(items) == 10
+    items = list(read_jsonl("data/steerability_items_v3.jsonl", SteerabilityItem))
+    assert len(items) == 300
     assert all(item.item_type == "steerability" for item in items)
     # Spot-check: categories should include at least 3 distinct values
     categories = {item.category for item in items}

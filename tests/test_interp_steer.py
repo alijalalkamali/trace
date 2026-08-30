@@ -1,5 +1,5 @@
 """
-Tests for lbe.interp.steer: split logic, vector construction, and the
+Tests for tracekit.interp.steer: split logic, vector construction, and the
 steering hook's addition mechanics -- all against synthetic data and dummy
 modules, no model download required.
 """
@@ -11,7 +11,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from lbe.interp.steer import (
+from tracekit.interp.steer import (
     SteeringHook,
     build_steering_vector,
     report_residual_norms,

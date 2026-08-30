@@ -1,6 +1,6 @@
 """Run the judge-prompt demand-characteristics control experiment.
 
-See lbe.judging.leakage for the full rationale. In short: the judge prompt
+See tracekit.judging.leakage for the full rationale. In short: the judge prompt
 tells the judge what the item is testing for, which may prime it toward the
 expected label. This script re-judges a balanced sample twice — once with
 the identical prompt (measuring the nondeterminism floor) and once with the
@@ -36,20 +36,20 @@ from pathlib import Path
 import pandas as pd
 from pydantic import BaseModel
 
-from lbe.io.dataset import EvalResult, SteerabilityItem
-from lbe.io.jsonl import read_jsonl, write_jsonl
-from lbe.judging.aggregate import load_all_judgments
-from lbe.judging.judge_output import JudgeOutputError, parse_judge_output
-from lbe.judging.judge_prompt import build_judge_prompt
-from lbe.judging.leakage import (
+from tracekit.io.dataset import EvalResult, SteerabilityItem
+from tracekit.io.jsonl import read_jsonl, write_jsonl
+from tracekit.judging.aggregate import load_all_judgments
+from tracekit.judging.judge_output import JudgeOutputError, parse_judge_output
+from tracekit.judging.judge_prompt import build_judge_prompt
+from tracekit.judging.leakage import (
     ARM_CONTROL,
     ARM_STRIPPED,
     analyze_leakage,
     format_leakage_report,
     sample_leakage_triples,
 )
-from lbe.judging.rubrics import get_rubric
-from lbe.models.loader import load_model
+from tracekit.judging.rubrics import get_rubric
+from tracekit.models.loader import load_model
 
 
 class LeakageJudgment(BaseModel):
