@@ -54,6 +54,12 @@ Reproducibility
 The eval split is recomputed with the same seed and fraction used by the alpha
 sweep, so the 50 items generated here are the same 50 the sweep ran on and are
 disjoint from the items that built the vector. Decoding is greedy.
+
+--swap-split exchanges the two halves, fitting the direction on what was the
+eval set and evaluating on what was the fitting set. At vector_fraction 0.5
+that is the second fold of a 2-fold cross-validation, and reproducing the
+effect there is what shows the result does not depend on which items happened
+to define the direction.
 """
 
 from __future__ import annotations
@@ -285,6 +291,7 @@ def run_ablation_arms(
     output_path: Path,
     start_layer: int,
     max_new_tokens: int = 500,
+    swap_split: bool = False,
 ) -> None:
     """
     Generate every eval prompt under every arm and append JSONL records.
@@ -317,6 +324,7 @@ def run_ablation_arms(
                                 "responder_model": ex.responder_model,
                                 "arm": arm.name,
                                 "start_layer": start_layer,
+                                "swap_split": swap_split,
                                 "ablation_layers": [layer_indices[0], layer_indices[-1]],
                                 "completion": completion,
                                 "finish_reason": finish_reason,
@@ -392,6 +400,13 @@ def main() -> None:
         help="Must match the alpha sweep so the eval items are identical.",
     )
     parser.add_argument(
+        "--swap-split",
+        action="store_true",
+        help="Fit the direction on what was the eval half and evaluate on what was "
+        "the fitting half. With --vector-fraction 0.5 this is the second fold of a "
+        "2-fold cross-validation.",
+    )
+    parser.add_argument(
         "--random-seed", type=int, default=1234, help="Seed for the random control direction."
     )
     parser.add_argument("--max-new-tokens", type=int, default=500)
@@ -419,13 +434,30 @@ def main() -> None:
         vector_fraction=args.vector_fraction,
         seed=args.split_seed,
     )
+    if args.swap_split:
+        vector_items, eval_items = eval_items, vector_items
+
+    # The swap is load-bearing: a silently ignored flag would rerun fold one and
+    # look like a successful replication. Assert the partition survived and log
+    # both halves' leading item ids so the exchange is visible in the run log.
+    overlap = set(vector_items) & set(eval_items)
+    if overlap:
+        raise ValueError(
+            f"Split is not a partition: {len(overlap)} item(s) in both halves "
+            f"(first few: {sorted(overlap)[:5]})."
+        )
+    n_pos_eval = sum(1 for i in eval_items if labels[i] == args.positive_label)
     logger.info(
-        "Split: %d vector items, %d eval items (seed=%d, fraction=%.2f).",
+        "Split: %d vector items, %d eval items (seed=%d, fraction=%.2f, swap=%s).",
         len(vector_items),
         len(eval_items),
         args.split_seed,
         args.vector_fraction,
+        args.swap_split,
     )
+    logger.info("  vector items begin: %s", vector_items[:5])
+    logger.info("  eval   items begin: %s", eval_items[:5])
+    logger.info("  eval positives: %d/%d", n_pos_eval, len(eval_items))
 
     sv: SteeringVector = build_steering_vector(
         activations, labels, args.layer_index, args.positive_label, vector_items
@@ -494,6 +526,7 @@ def main() -> None:
         args.output_path,
         start_layer=args.ablation_start,
         max_new_tokens=args.max_new_tokens,
+        swap_split=args.swap_split,
     )
 
 

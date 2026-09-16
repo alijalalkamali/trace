@@ -358,3 +358,56 @@ def test_arm_dataclass_is_frozen():
     arm = AblationArm(ARM_TARGET, random_unit_direction(HIDDEN, 0), True)
     with pytest.raises(dataclasses.FrozenInstanceError):
         arm.name = "other"  # type: ignore[misc]
+
+
+# ---------------------------------------------------------------------------
+# Split swapping (2-fold cross-validation)
+# ---------------------------------------------------------------------------
+
+
+def _fake_labels(n: int = 100, n_pos: int = 42) -> dict[str, str]:
+    return {f"vcl_{i:03d}": ("derail" if i < n_pos else "answer") for i in range(n)}
+
+
+def test_swap_exchanges_the_two_halves():
+    """The flag must actually swap. A silently ignored swap would rerun fold
+    one and be indistinguishable from a successful replication."""
+    from tracekit.interp.steer import split_items
+
+    labels = _fake_labels()
+    vec, ev = split_items(sorted(labels), labels, "derail", vector_fraction=0.5, seed=0)
+    swapped_vec, swapped_ev = ev, vec
+
+    assert swapped_vec == ev
+    assert swapped_ev == vec
+    assert set(swapped_vec) != set(vec)
+    assert set(swapped_ev) != set(ev)
+
+
+def test_split_is_a_partition_before_and_after_swap():
+    from tracekit.interp.steer import split_items
+
+    labels = _fake_labels()
+    vec, ev = split_items(sorted(labels), labels, "derail", vector_fraction=0.5, seed=0)
+    for a, b in ((vec, ev), (ev, vec)):
+        assert set(a) & set(b) == set()
+        assert set(a) | set(b) == set(labels)
+
+
+def test_swap_at_half_fraction_gives_equal_sized_folds():
+    """Only at fraction 0.5 is the swap a genuine second fold rather than a
+    smaller fit set evaluated on a larger one."""
+    from tracekit.interp.steer import split_items
+
+    labels = _fake_labels()
+    vec, ev = split_items(sorted(labels), labels, "derail", vector_fraction=0.5, seed=0)
+    assert len(vec) == len(ev) == 50
+
+
+def test_swap_preserves_class_balance_in_both_folds():
+    from tracekit.interp.steer import split_items
+
+    labels = _fake_labels()
+    vec, ev = split_items(sorted(labels), labels, "derail", vector_fraction=0.5, seed=0)
+    for half in (vec, ev):
+        assert sum(1 for i in half if labels[i] == "derail") == 21
