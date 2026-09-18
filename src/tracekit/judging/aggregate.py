@@ -1,7 +1,11 @@
 """Aggregation of multi-judge classifications.
 
+The consensus rule itself is defined once, in
+tracekit.analysis.consensus, and is shared with the steering and ablation
+analyses so the behavioral and intervention rates stay comparable.
+
 Reads per-judge JSONL files and computes:
-    - Majority-vote consensus per (item, responder, condition)
+    - Most-frequent-label consensus per (item, responder, condition)
     - Leave-one-out consensus (excluding self-judgment for peer-review-among-
       models analysis)
     - Inter-judge agreement (Fleiss' kappa across all judges per category)
@@ -16,11 +20,11 @@ and per-judge classifications for downstream analysis.
 
 from __future__ import annotations
 
-from collections import Counter
 from pathlib import Path
 
 import pandas as pd
 
+from tracekit.analysis.consensus import consensus_label
 from tracekit.io.jsonl import read_jsonl
 from tracekit.judging.run_judges import JudgmentRecord
 
@@ -56,23 +60,30 @@ def load_all_judgments(judgments_dir: Path) -> pd.DataFrame:
 
 
 def _majority_vote(labels: list[str]) -> tuple[str, int]:
-    """Return the majority-vote label and its count.
+    """Return the most frequent label and its count, ties broken lexicographically.
 
-    Ties broken by lexicographic order (deterministic).
+    Thin wrapper over tracekit.analysis.consensus.consensus_label, kept for the
+    call sites that vote over a bare list of labels with no responder to
+    exclude. The rule itself lives in one place so the behavioral and
+    intervention analyses cannot drift apart again: the steering and ablation
+    paths previously counted every judge and dropped items with no majority,
+    which produced denominators below the item count.
+
+    Judge identities are already discarded by the callers that use this helper,
+    so the labels are keyed by position. Integer keys never match a responder
+    id, which is why responder is None here: this path excludes nothing by
+    construction.
 
     Args:
         labels: List of classification labels from multiple judges.
 
     Returns:
-        Tuple of (majority_label, count).
+        Tuple of (label, count); ("", 0) when no labels are given.
     """
     if not labels:
         return "", 0
-    counter = Counter(labels)
-    max_count = max(counter.values())
-    # Break ties deterministically
-    tied = sorted(label for label, c in counter.items() if c == max_count)
-    return tied[0], max_count
+    result = consensus_label(dict(enumerate(labels)), responder=None)
+    return result.label, result.count
 
 
 def compute_consensus(df: pd.DataFrame) -> pd.DataFrame:
@@ -108,19 +119,20 @@ def compute_consensus(df: pd.DataFrame) -> pd.DataFrame:
             for c in wide.columns
             if c not in {"item_id", "category", "responder_model", "condition"}
         ]
-        all_labels = [row[j] for j in judges if pd.notna(row[j])]
-        # Leave-one-out: exclude self-judgment
-        loo_labels = [row[j] for j in judges if pd.notna(row[j]) and j != row["responder_model"]]
-        consensus_label, consensus_count = _majority_vote(all_labels)
-        loo_label, loo_count = _majority_vote(loo_labels)
+        votes = {j: row[j] for j in judges if pd.notna(row[j])}
+        all_label, all_count = _majority_vote(list(votes.values()))
+        # Leave-one-out: the responder's judgment of its own output is excluded
+        # by the shared rule, which matches judge ids to the responder id after
+        # normalizing the provider-qualified form.
+        loo = consensus_label(votes, responder=row["responder_model"], strict=False)
         return pd.Series(
             {
-                "consensus": consensus_label,
-                "consensus_count": consensus_count,
-                "consensus_n_judges": len(all_labels),
-                "consensus_loo": loo_label,
-                "consensus_loo_count": loo_count,
-                "consensus_loo_n_judges": len(loo_labels),
+                "consensus": all_label,
+                "consensus_count": all_count,
+                "consensus_n_judges": len(votes),
+                "consensus_loo": loo.label if loo else "",
+                "consensus_loo_count": loo.count if loo else 0,
+                "consensus_loo_n_judges": loo.n_judges if loo else 0,
             }
         )
 
