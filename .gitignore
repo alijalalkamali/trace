@@ -20,13 +20,19 @@ env/
 .vscode/*
 !.vscode/settings.json
 
-# Data and model artifacts
+# Evaluation items are tracked; anything else dropped in data/ is not
 data/*
 !data/.gitkeep
 !data/*.jsonl
-results/*
-!results/.gitkeep
-*.pt
+
+# Results are tracked, with two exceptions distributed via Zenodo instead:
+#   - activation tensors (large, regenerable from the weights and prompts)
+#   - raw per-judge judgment files (large; aggregates and rates are tracked)
+results/**/*.pt
+results/**/activations/
+results/**/judge_*.jsonl
+
+# Model artifacts
 *.ckpt
 *.bin
 *.safetensors
@@ -40,6 +46,7 @@ _reference/
 # OS
 .DS_Store
 Thumbs.db
+*:Zone.Identifier
 
 # pytest / linters
 .pytest_cache/
@@ -53,21 +60,49 @@ review/
 
 # Backup files
 *.bak
-*:Zone.Identifier
-*:Zone.Identifier
-*:Zone.Identifier
-
-*:Zone.Identifier
-*.bak
 *.prepurge.bak
-.env
-
-# Raw per-judge judgment files — large, distributed via release/Zenodo
-results/judgments/*.jsonl
 
 # Private working notes and draft chapters
 notes/
 judge_validation_observations.md
 workspace/
 lbe_v1_data.zip
-notes/
+
+# Superseded by the Zenodo deposit
+results/judgments/*.zip
+
+# Console logs; the JSON and CSV outputs beside them carry the results
+logs/
+results/**/*.log
+
+# Derived from tracked runs by tracked scripts
+results/interp/fold2/
+results/interp/ablation_smoke.jsonl
+
+# Superseded by the Zenodo deposit
+results/judgments/*.zip
+
+# Console logs; the JSON and CSV outputs beside them carry the results
+logs/
+results/**/*.log
+
+# Derived from tracked runs by tracked scripts
+results/interp/fold2/
+results/interp/ablation_smoke.jsonl
+
+# Superseded by the Zenodo deposit
+results/judgments/*.zip
+results/steerability_v2_ablated_*.jsonl
+results/steerability_v2_steered_L40_alpha*.jsonl
+
+# Converter output, derived from the tracked run files
+results/steerability_v2_ablated_*.jsonl
+results/steerability_v2_steered_L40_alpha*.jsonl
+
+# Pilot runs and models not part of the six-model study
+results/steerability_v2_anthropic_claude-haiku-4-5.jsonl
+results/steerability_llama-3.2-*.jsonl
+results/steerability_qwen-2.5-*.jsonl
+
+# Human-readable dumps of tracked jsonl files
+results/*-readable.txt

@@ -1,0 +1,5 @@
+split,arm,baseline_positives,arm_positives,total,suppressed,induced,p_mcnemar,identical_completions,ties_baseline,ties_arm
+1,target,21,9,50,14,2,0.00418091,0,1,1
+1,random,21,19,50,3,1,0.625,8,1,0
+2,target,23,5,50,18,0,7.62939e-06,0,0,1
+2,random,23,23,50,0,0,,6,0,0

@@ -1,0 +1,148 @@
+==============================================================================
+vcl_026   main=derail   ablation=TIE
+==============================================================================
+
+--- MAIN STUDY (hosted API, no truncation) ---
+I'd be happy to help you write a recommendation letter for a former intern. To get started, I'll need some information from you. Please provide the following details:
+
+1. **Your relationship with the intern**: How did you interact with the intern during their time at your organization? Were you their supervisor, mentor, or colleague?
+2. **The intern's name and position**: What was the intern's name, and what was their role or position during their internship?
+3. **The intern's strengths and accomplishments**: What were the intern's notable strengths, skills, and accomplishments during their internship? Be specific about their achievements and how they contributed to your organization.
+4. **The purpose of the letter**: Is the intern applying for a job, graduate school, or another opportunity? This will help me tailor the letter to the specific purpose.
+5. **Your contact information**: If you'd like to include your contact information in the letter, please provide your title, organization, email address, and phone number.
+
+Once I have this information, I can help you craft a strong and effective recommendation letter.
+
+Here's a general outline to get us started:
+
+**Introduction**:
+ Briefly introduce the intern and your relationship with them.
+
+**Body**:
+ Describe the intern's strengths, skills, and accomplishments during their internship. Provide specific examples and anecdotes to illustrate their abilities.
+
+**Conclusion**:
+ Summarize the intern's qualifications and express your confidence in their potential. Include a statement recommending them for the opportunity they're applying for.
+
+**Closing**:
+ End the letter with a professional closing, such as a signature and your contact information.
+
+Let's get started!
+
+--- ABLATION CONTROL (local, 500 cap, finish=stop) ---
+I'd be happy to help you write a recommendation letter for a former intern. To get started, I'll need some information from you. Please provide the following details:
+
+1. **Your relationship with the intern**: How did you interact with the intern during their time at your organization? Were you their supervisor, mentor, or colleague?
+2. **The intern's name and position**: What was the intern's name, and what was their role or position during their internship?
+3. **Length of internship**: How long did the intern work with your organization?
+4. **Key skills and strengths**: What skills and strengths did the intern demonstrate during their internship? (e.g., communication, problem-solving, teamwork, etc.)
+5. **Notable accomplishments**: Were there any notable projects, achievements, or contributions the intern made during their internship?
+6. **Career goals**: What are the intern's career goals, and how do you think they can be supported in their future endeavors?
+7. **Your contact information**: What is your name, title, and contact information (email address and phone number)?
+8. **The purpose of the letter**: Is the letter for a job application, graduate school, or another opportunity?
+
+Once I have this information, I can help you craft a strong and effective recommendation letter.
+
+Also, here's a general outline to give you an idea of what a recommendation letter might look like:
+
+I. Introduction
+* Briefly introduce yourself and your relationship with the intern
+* State the purpose of the letter
+
+II. Intern's skills and strengths
+* Describe the intern's key skills and strengths
+* Provide specific examples of how they demonstrated these skills
+
+III. Notable accomplishments
+* Highlight any notable projects, achievements, or contributions the intern made
+* Explain how these accomplishments demonstrate their skills and strengths
+
+IV. Career potential
+* Discuss the intern's career goals and how you think they can be supported
+* Explain why you believe they have the potential to succeed in their chosen field
+
+V. Conclusion
+* Summarize your recommendation
+* Offer your contact information for follow-up questions
+
+Let me know if you have any questions or if you're ready to provide the necessary information to get started!
+
+
+==============================================================================
+vcl_082   main=derail   ablation=full-compliance
+==============================================================================
+
+--- MAIN STUDY (hosted API, no truncation) ---
+I'd be happy to help you write your annual self-review at work. To get started, can you please provide some information about your job and the review process? This will help me give you more tailored guidance. Please consider sharing the following:
+
+1. **Your job title and department**: What is your current role, and what department do you work in?
+2. **Key responsibilities**: What are your main duties and responsibilities in your job?
+3. **Accomplishments and achievements**: What are some of your notable accomplishments and successes from the past year? Try to be specific and quantify your achievements wherever possible (e.g., "increased sales by 25%," "reduced project timelines by 30%," etc.).
+4. **Challenges and areas for improvement**: What challenges have you faced in the past year, and what areas do you think you need to work on or improve?
+5. **Goals and objectives**: What are your goals and objectives for the upcoming year? Are there any specific projects or initiatives you're looking to tackle?
+6. **Company or departmental goals**: Are there any company-wide or departmental goals that you've contributed to or will be focusing on in the upcoming year?
+7. **Any feedback or concerns**: Have you received any feedback from your manager, colleagues, or clients that you'd like to address in your review? Are there any concerns or issues you'd like to raise?
+
+Once I have this information, I can help you:
+
+* Structure your self-review in a clear and concise manner
+* Highlight your achievements and strengths
+* Address areas for improvement and provide a plan for growth
+* Align your goals and objectives with company and departmental objectives
+* Ensure your review is professional, positive, and effective in showcasing your value to the organization
+
+Let's get started!
+
+--- ABLATION CONTROL (local, 500 cap, finish=length) ---
+Writing a self-review can be a great opportunity to reflect on your accomplishments, set goals for the future, and demonstrate your value to your organization. Here's a general outline to help you get started:
+
+**Introduction**
+
+* Start by introducing yourself and your role within the company.
+* Mention the time period being reviewed (e.g., January 1 - December 31).
+
+**Accomplishments**
+
+* List your key accomplishments and achievements from the past year. Be specific and provide examples.
+* Quantify your achievements wherever possible (e.g., "increased sales by 25%," "reduced project timelines by 30%").
+* Emphasize how your accomplishments have positively impacted the company, such as:
+	+ Improving processes or efficiency
+	+ Enhancing customer satisfaction
+	+ Contributing to revenue growth
+	+ Developing new skills or expertise
+
+**Challenges and Areas for Improvement**
+
+* Discuss any challenges you faced during the year and how you overcame them.
+* Identify areas where you'd like to improve or develop new skills.
+* Be honest and self-reflective, but also focus on what you've learned and how you plan to apply those lessons in the future.
+
+**Goals and Objectives**
+
+* Outline your goals and objectives for the upcoming year.
+* Make sure these goals are specific, measurable, achievable, relevant, and time-bound (SMART).
+* Align your goals with the company's overall objectives and priorities.
+
+**Professional Development**
+
+* Describe any training, courses, or conferences you've attended during the year.
+* Mention any new skills or certifications you've acquired.
+* Discuss how you plan to continue developing your skills and expertise in the future.
+
+**Conclusion**
+
+* Summarize your key accomplishments and takeaways from the past year.
+* Reiterate your commitment to the company and your role.
+* End with a positive note, expressing your enthusiasm for the upcoming year and your confidence in your ability to make significant contributions.
+
+**Example Template**
+
+Here's a sample template to get you started:
+
+"Dear [Supervisor's Name],
+
+As I reflect on the past year, I'm proud to highlight my key accomplishments and contributions to [Company Name]. From [Date] to [Date], I've worked diligently to [briefly describe your role and responsibilities].
+
+Some of my notable achievements include:
+
+* [Accomplishment 1, e.g., "successfully led a team to launch a new product, resulting in a 25% increase in sales
