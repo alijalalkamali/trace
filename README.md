@@ -35,6 +35,18 @@ reasoning. Two additional categories (stylistic formatting and reasoning
 hints with checkable answers) validate the instrument and carry no claims of
 their own.
 
+## Consensus rule
+
+Every rate in the study, behavioral and mechanistic alike, uses one rule: take
+the most frequent label among the judges, excluding the responding model's
+judgment of its own output, breaking ties by lexicographic order. Excluding
+self-judgment keeps self-preference measurable rather than absorbed into the
+ground truth, and the deterministic tie-break means no item is ever dropped for
+lack of a majority, so denominators equal item counts.
+
+The rule has one implementation, `tracekit.analysis.consensus`, called from
+every analysis path.
+
 ## Headline findings
 
 - **A reasoning-disclosure mode exclusive to GPT-5.** On steered
@@ -43,8 +55,9 @@ their own.
   equivalent opportunities.
 - **Suppression resistance in two models only, in two modes.** Claude Opus and
   GPT-5 are the only models that overtly resist explicit suppression
-  instructions (combined 23% vs 0.25% elsewhere), and they favor opposite
-  modes: Opus challenges the framing while complying, GPT-5 refuses outright.
+  instructions (33 of 160 held-out opportunities against 1 of 320 for the other
+  four combined), and they favor opposite modes: Opus challenges the framing
+  while complying, GPT-5 refuses outright.
 - **Three tiers of baseline compliance.** On values-conflicting requests the
   models separate into three statistically distinct tiers rather than a
   continuum.
@@ -72,17 +85,18 @@ The findings survived two forms of scrutiny built into the pipeline:
 
 ```
 data/                     Evaluation items (steerability_items_v3.jsonl, 300 evaluation items plus 40 items for sanity check)
-src/tracekit/                  Package: model backends, judging, aggregation, IO
-src/tracekit/interp/           Mechanistic interpretability: harvesting, probing, steering
+src/tracekit/             Package: model backends, judging, aggregation, IO
+src/tracekit/analysis/    Consensus rule shared by every analysis path
+src/tracekit/interp/      Mechanistic interpretability: harvesting, probing, steering, ablation
 scripts/                  Pipeline entry points and diagnostics
 results/analysis/         Aggregate rate tables, statistical tests, agreement
 results/leakage/          Demand-characteristics control outputs
-results/interp/           Probe layer sweep and steering-rate results
+results/interp/           Probe layer sweep, steering rates, ablation runs and rates
 ```
 
-The raw per-judge judgment files (24,480 classifications) are large and are
-distributed as a release asset rather than committed to the repository. See
-Releases, or the archived deposit linked below.
+The raw per-judge judgment files (24,480 classifications) and the harvested
+activation tensor are large and are distributed through the archived deposit
+rather than committed to the repository. See Data availability below.
 
 ## Reproducing the analysis
 
@@ -95,12 +109,27 @@ python scripts/analyze_judgments.py
 
 # Held-out subset (items never used in rubric construction)
 python scripts/analyze_judgments.py --item-range 21 100 --output-suffix _heldout80
+
+# Steering sweep rates
+python scripts/analyze_steering.py \
+  --judgments-dir results/interp/judgments \
+  --responder together:meta-llama/Llama-3.3-70B-Instruct-Turbo \
+  --rates-output results/interp/steering_rates.csv \
+  --per-item-output results/interp/steering_rates_per_item.csv
+
+# Ablation rates and paired tests, both splits
+python scripts/analyze_ablation.py \
+  --fold results/interp/ablation_judgments:results/interp/ablation_runs.jsonl \
+  --fold results/interp/ablation_judgments_fold2:results/interp/ablation_runs_fold2.jsonl \
+  --responder together:meta-llama/Llama-3.3-70B-Instruct-Turbo \
+  --output results/interp/ablation_rates.csv
 ```
 
 ## Data availability
 
-Aggregate results and analysis outputs are in `results/`. The full raw
-judgment matrix is available as a GitHub release asset and archived at
+Aggregate results, generations, ablation runs and analysis outputs are in
+`results/`. The full raw judgment matrix and the harvested activation tensor
+are available as a GitHub release asset and archived at
 [doi:10.5281/zenodo.21629846](https://doi.org/10.5281/zenodo.21629846).
 
 ## Mechanistic interpretability (src/tracekit/interp/)
@@ -109,12 +138,25 @@ Extends the behavioral evaluation to mechanism on the open-weight model.
 Pipeline: activation harvesting (forward hooks, last-prompt-token residual
 stream, 20 layers of Llama-3.3-70B) → L2-regularized linear probes with
 nested CV and 200-permutation nulls → difference-of-means activation steering
-with a vector/eval item split. Result: the derail-vs-answer split is decodable
-at 0.87 held-out balanced accuracy (plateau layers 32–76) and causally
-steerable: derail rate moves monotonically 0%→86% across the α sweep (Fisher
-p < 1e-5 vs. control both directions). Entry points:
-`src/tracekit/interp/{harvest,probe,steer}.py`, `scripts/judge_steering_sweep.py`,
-`scripts/analyze_steering_sweep.py`; results in `results/interp/steering_rates.csv`.
+with a vector/eval item split → directional ablation across all layers.
+
+The derail-vs-answer split is decodable at 0.87 held-out balanced accuracy
+(plateau layers 36–76) from the residual stream at the generation-onset
+position, before any response token exists. The decoded direction is causally
+implicated in both directions. Adding it moves the derail rate monotonically
+from 0% to 86% across the α sweep (Fisher p < 1e-5 against control at both
+extremes). Removing it by projecting the residual stream orthogonal to the
+direction cuts the natural rate from 42% to 18% in one split and from 46% to
+10% in the other, one-directionally (McNemar p = 0.004 and p = 7.6e-6), while
+ablating a random direction of equal norm leaves the rate unchanged. The
+experiment runs twice on complementary halves, each fitting its direction on
+one half and testing on the other; the two fitted directions have cosine
+similarity 0.82 against 0.01 for the random control.
+
+Entry points: `src/tracekit/interp/{harvest,probe,steer,ablate}.py`,
+`scripts/judge_steering_sweep.py`, `scripts/judge_ablation.py`,
+`scripts/analyze_steering.py`, `scripts/analyze_ablation.py`; results in
+`results/interp/steering_rates.csv` and `results/interp/ablation_rates.csv`.
 
 ## Installation
 
