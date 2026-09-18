@@ -70,6 +70,33 @@ def cohens_h(p1: float, p2: float) -> float:
     return abs(phi1 - phi2)
 
 
+def wilson_ci(
+    successes: int,
+    total: int,
+    alpha: float = 0.05,
+) -> tuple[float, float]:
+    """Wilson score interval for a single binomial proportion.
+
+    Chosen over the normal approximation because the headline rates in
+    this study sit at or near 0 and 1, where the normal interval produces
+    bounds outside [0, 1] and collapses to zero width at the boundaries.
+    The Wilson interval is asymmetric near the boundaries and retains
+    non-zero width at 0/n and n/n, which is the honest statement of what
+    n observations support.
+
+    Returns:
+        Tuple of (ci_lower, ci_upper), each in [0, 1].
+    """
+    if total == 0:
+        return float("nan"), float("nan")
+    z = stats.norm.ppf(1 - alpha / 2)
+    p = successes / total
+    denom = 1 + z**2 / total
+    center = (p + z**2 / (2 * total)) / denom
+    half = (z / denom) * math.sqrt(p * (1 - p) / total + z**2 / (4 * total**2))
+    return max(0.0, center - half), min(1.0, center + half)
+
+
 def bootstrap_rate_diff_ci(
     successes_a: int,
     total_a: int,
@@ -186,6 +213,8 @@ def build_classification_rate_table(
                     "count": int(count),
                     "total": int(total),
                     "rate": float(count) / total,
+                    "ci_lower": wilson_ci(int(count), int(total))[0],
+                    "ci_upper": wilson_ci(int(count), int(total))[1],
                 }
             )
     result = pd.DataFrame(rows)
@@ -223,6 +252,8 @@ def build_classification_rate_table(
                             "count": 0,
                             "total": responder_total,
                             "rate": 0.0,
+                            "ci_lower": wilson_ci(0, responder_total)[0],
+                            "ci_upper": wilson_ci(0, responder_total)[1],
                         }
                     )
     if zero_rows:
