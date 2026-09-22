@@ -3,7 +3,7 @@
 Reads the aggregated judgments CSV produced by run_judge_pipeline.py and
 computes:
     - Per-category classification distributions by responder model
-    - Pairwise Fisher's exact tests for lab differences on each classification
+    - Pairwise McNemar exact tests for lab differences on each classification
     - Bootstrap confidence intervals for rate differences
     - Fleiss' kappa per category (inter-judge agreement)
     - Effect sizes (Cohen's h) for proportion comparisons
@@ -25,8 +25,10 @@ Writes:
     results/analysis/analysis_report.md   (human-readable summary)
 
 Rationale for each test:
-    Fisher's exact: valid at any sample size; N=20/category is too small
-        for chi-squared reliability.
+    McNemar's exact: every model answers the same items, so two models'
+        labels on an item are paired. The test uses only the items where
+        the two disagree, and is exact, so it stays valid at the zero and
+        near-zero counts several lab-specific labels produce.
     Bootstrap CIs: normal-approximation CIs unreliable at N=20; bootstrap
         is distribution-free.
     Cohen's h: standardized effect size for proportions. Report alongside
@@ -50,6 +52,20 @@ from scipy import stats
 # =============================================================================
 # Statistical primitives
 # =============================================================================
+
+
+CORE_CATEGORIES: tuple[str, ...] = (
+    "values_conflict_low",
+    "reasoning_values_elicit",
+    "reasoning_values_suppress",
+)
+"""Categories carrying the paper's claims.
+
+The two validation categories (stylistic, reasoning_hint) confirm that the
+steering channel works and that judges can score a checkable answer. No claim
+rests on them, so their cells stay out of the multiple-comparison family while
+their rates remain in the rate table.
+"""
 
 
 def cohens_h(p1: float, p2: float) -> float:
@@ -270,25 +286,76 @@ def build_classification_rate_table(
 
 def pairwise_classification_tests(
     rate_table: pd.DataFrame,
+    aggregated_df: pd.DataFrame,
     focus_classifications: dict[str, tuple[str, ...]] | None = None,
+    consensus_column: str = "consensus_loo",
+    core_categories: tuple[str, ...] = CORE_CATEGORIES,
 ) -> pd.DataFrame:
-    """Pairwise Fisher's exact tests + effect sizes + bootstrap CIs for
+    """Pairwise McNemar exact tests + effect sizes + bootstrap CIs for
     lab differences on specific classifications.
+
+    Why McNemar rather than Fisher
+    ------------------------------
+    Every model answers the same items, so two models' labels on a given
+    item are paired observations, not independent samples. Fisher's exact
+    test compares two independent groups; applied here it discards the
+    pairing and answers a different question. McNemar uses only the items
+    where the two models disagree and asks whether that disagreement runs
+    one way, which is the claim a cross-model difference makes. Items where
+    both models carry the same label say nothing about the difference and
+    are excluded by construction.
+
+    The test is exact (a two-sided binomial test on the discordant pairs),
+    so it stays valid at the zero and near-zero counts that several
+    lab-specific labels produce. When two models never disagree on a label
+    there are no discordant pairs and no test is possible; those rows report
+    p = 1.0, which is the correct statement that the data contain no
+    evidence of a difference.
 
     Args:
         rate_table: Output of build_classification_rate_table.
+        aggregated_df: The aggregated_judgments.csv content, one row per
+            (item_id, responder_model, condition). Needed because the paired
+            test requires per-item labels, which the rate table has already
+            collapsed into counts.
         focus_classifications: Optional per-category tuple of classifications
             to focus on (skip others). If None, tests all classifications.
             Useful for reducing multiple-comparison burden by focusing on
             paper-relevant labels.
+        consensus_column: Which consensus column to pair on. Must match the
+            column the rate table was built from, or counts and discordant
+            pairs would describe different labelings.
+        core_categories: Categories whose cells enter the test family and the
+            BH correction. Defaults to the three categories the paper's
+            claims come from.
 
     Returns:
         DataFrame with columns:
             category, condition, classification, model_a, model_b,
             rate_a, rate_b, rate_diff, ci_lower, ci_upper,
-            fisher_p, cohens_h, fisher_p_bh_adjusted.
+            discordant_a, discordant_b, mcnemar_p, cohens_h,
+            mcnemar_p_bh_adjusted.
+
+        discordant_a counts items labeled with this classification by
+        model_a but not model_b; discordant_b counts the reverse.
     """
     rows = []
+
+    # The BH family is the set of tests the paper draws conclusions from,
+    # so it covers the three core categories only. The two validation
+    # categories carry no claim; including their cells would enlarge the
+    # family and make the correction stricter than the inference requires.
+    # Their rates are still reported in the rate table, and a test can be
+    # run on request by widening this tuple.
+    rate_table = rate_table[rate_table["category"].isin(core_categories)]
+
+    # Per-item labels, keyed by (category, condition, model). Built once
+    # rather than per comparison: the loop below runs 15 times per
+    # label-condition cell and would otherwise refilter the frame each time.
+    labels_by_model: dict[tuple[str, str, str], dict[str, str]] = {
+        key: group.set_index("item_id")[consensus_column].to_dict()
+        for key, group in aggregated_df.groupby(["category", "condition", "responder_model"])
+    }
 
     for (category, condition, classification), group in rate_table.groupby(
         ["category", "condition", "classification"]
@@ -304,16 +371,33 @@ def pairwise_classification_tests(
                 row_a = group[group["responder_model"] == model_a].iloc[0]
                 row_b = group[group["responder_model"] == model_b].iloc[0]
 
-                # Contingency table for Fisher's exact
                 a_success, a_total = int(row_a["count"]), int(row_a["total"])
                 b_success, b_total = int(row_b["count"]), int(row_b["total"])
-                contingency = [
-                    [a_success, a_total - a_success],
-                    [b_success, b_total - b_success],
-                ]
 
-                # Fisher's exact (two-sided)
-                _, fisher_p = stats.fisher_exact(contingency, alternative="two-sided")
+                # Paired counts: items carrying this label under one model
+                # but not the other. Concordant items are excluded by the
+                # test rather than by us; they carry no information about a
+                # difference between the two models.
+                labels_a = labels_by_model[(category, condition, model_a)]
+                labels_b = labels_by_model[(category, condition, model_b)]
+                shared_items = labels_a.keys() & labels_b.keys()
+                disc_a = sum(
+                    labels_a[i] == classification and labels_b[i] != classification
+                    for i in shared_items
+                )
+                disc_b = sum(
+                    labels_a[i] != classification and labels_b[i] == classification
+                    for i in shared_items
+                )
+
+                # McNemar's exact test: among items where the two models
+                # disagree, is the direction of disagreement a coin flip?
+                # With no discordant pairs the test is undefined; p = 1.0
+                # records that the data show no difference at all.
+                if disc_a + disc_b > 0:
+                    mcnemar_p = float(stats.binomtest(disc_a, disc_a + disc_b, 0.5).pvalue)
+                else:
+                    mcnemar_p = 1.0
 
                 # Cohen's h
                 p1 = a_success / a_total if a_total > 0 else 0.0
@@ -342,7 +426,9 @@ def pairwise_classification_tests(
                         "rate_diff": p1 - p2,
                         "ci_lower": ci_lo,
                         "ci_upper": ci_hi,
-                        "fisher_p": fisher_p,
+                        "discordant_a": disc_a,
+                        "discordant_b": disc_b,
+                        "mcnemar_p": mcnemar_p,
                         "cohens_h": h,
                     }
                 )
@@ -360,15 +446,17 @@ def pairwise_classification_tests(
                 "rate_diff",
                 "ci_lower",
                 "ci_upper",
-                "fisher_p",
+                "discordant_a",
+                "discordant_b",
+                "mcnemar_p",
                 "cohens_h",
-                "fisher_p_bh_adjusted",
+                "mcnemar_p_bh_adjusted",
             ]
         )
 
     df = pd.DataFrame(rows)
-    # Apply BH correction to all fisher p-values in one family
-    df["fisher_p_bh_adjusted"] = benjamini_hochberg(df["fisher_p"].tolist())
+    # One BH family over every pairwise test the run produces.
+    df["mcnemar_p_bh_adjusted"] = benjamini_hochberg(df["mcnemar_p"].tolist())
     return df
 
 
@@ -454,7 +542,7 @@ def build_analysis_report(
     if len(tests_df) == 0:
         lines.append("No pairwise tests computed.")
     else:
-        sig = tests_df[tests_df["fisher_p_bh_adjusted"] < 0.05]
+        sig = tests_df[tests_df["mcnemar_p_bh_adjusted"] < 0.05]
         if len(sig) == 0:
             lines.append("No pairwise comparisons reach significance after FDR correction.")
         else:
@@ -469,7 +557,9 @@ def build_analysis_report(
                     f"Δ = {row['rate_diff']:+.2f} "
                     f"[95% CI {row['ci_lower']:+.2f}, {row['ci_upper']:+.2f}], "
                     f"Cohen's h = {row['cohens_h']:.2f}, "
-                    f"p_adj = {row['fisher_p_bh_adjusted']:.3g}"
+                    f"discordant {int(row['discordant_a'])}/"
+                    f"{int(row['discordant_b'])}, "
+                    f"p_adj = {row['mcnemar_p_bh_adjusted']:.3g}"
                 )
     lines.append("")
 
@@ -674,9 +764,9 @@ def main() -> None:
         ),
         "stylistic": ("full-match", "partial-match"),
     }
-    print("Running pairwise Fisher's exact tests")
+    print("Running pairwise McNemar exact tests")
     tests_df = pairwise_classification_tests(
-        rate_table, focus_classifications=focus_classifications
+        rate_table, aggregated_df, focus_classifications=focus_classifications
     )
     tests_df.to_csv(_out("statistical_tests.csv"), index=False)
     print(f"  Wrote {len(tests_df)} tests to statistical_tests.csv")

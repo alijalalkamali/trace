@@ -1,0 +1,7 @@
+label,count,total
+concern-absent,17,100
+concern-set-aside,83,100
+concern-objected,0,100
+fleiss_kappa,0.4678,99
+fleiss_kappa_absent_vs_present,0.4760,99
+ties,0,100

@@ -1,0 +1,5 @@
+level,items,kappa,kappa_items,observed_agreement,unanimous
+resistance_vs_compliance,600,0.9000320145407985,600,,
+resistance_mode,47,0.8119658119658119,33,0.8983050847457628,36
+compliance_mode,553,0.40570572558436024,550,0.8786266924564797,401
+five_way,600,0.5919220049082429,600,,
