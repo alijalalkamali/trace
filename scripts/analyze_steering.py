@@ -30,7 +30,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from scipy.stats import fisher_exact
+from scipy.stats import binomtest
 
 from tracekit.analysis.consensus import consensus_label
 
@@ -86,6 +86,7 @@ def analyze(
             "mix interventions."
         )
 
+    labels_by_alpha = {}
     per_item_rows, counts = [], {}
     for alpha in sorted(votes):
         positives = ties = 0
@@ -103,6 +104,9 @@ def analyze(
                 }
             )
         counts[alpha] = (positives, len(votes[alpha]), ties)
+        labels_by_alpha[alpha] = {
+            row["item_id"]: row["consensus"] for row in per_item_rows if row["alpha"] == alpha
+        }
 
     totals = {total for _, total, _ in counts.values()}
     if len(totals) != 1:
@@ -122,14 +126,19 @@ def analyze(
         if alpha == 0.0:
             p_text, p_value = "---", ""
         else:
-            p_value = fisher_exact(
-                [
-                    [positives, total - positives],
-                    [control_positives, control_total - control_positives],
-                ]
-            )[1]
-            p_text = f"{p_value:.3g}"
-            p_value = f"{p_value:.6g}"
+            # Paired: the same items run under every alpha, so the test uses
+            # only the items whose label changed against the control.
+            control = labels_by_alpha[0.0]
+            here = labels_by_alpha[alpha]
+            shared = control.keys() & here.keys()
+            gained = sum(here[i] == POSITIVE_LABEL and control[i] != POSITIVE_LABEL for i in shared)
+            lost = sum(here[i] != POSITIVE_LABEL and control[i] == POSITIVE_LABEL for i in shared)
+            if gained + lost:
+                p_value = binomtest(gained, gained + lost, 0.5).pvalue
+                p_text = f"{p_value:.3g}"
+                p_value = f"{p_value:.6g}"
+            else:
+                p_text, p_value = "n/a", ""
         print(
             f"{alpha:>+8.0f} {positives:>4}/{total:<4} {positives / total * 100:6.0f}% "
             f"{p_text:>12} {ties:>5}"
@@ -141,7 +150,7 @@ def analyze(
                 "derail_count": positives,
                 "total": total,
                 "rate": f"{positives / total:.4f}",
-                "p_vs_control": p_value,
+                "p_vs_control_mcnemar": p_value,
                 "ties": ties,
             }
         )
