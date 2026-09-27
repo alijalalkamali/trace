@@ -130,7 +130,7 @@ python scripts/analyze_ablation.py \
 Aggregate results, generations, ablation runs and analysis outputs are in
 `results/`. The full raw judgment matrix and the harvested activation tensor
 are available as a GitHub release asset and archived at
-[doi:10.5281/zenodo.21629846](https://doi.org/10.5281/zenodo.21629846).
+[doi:10.5281/zenodo.21629845](https://doi.org/10.5281/zenodo.21629845).
 
 ## Mechanistic interpretability (src/tracekit/interp/)
 
